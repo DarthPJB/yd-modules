@@ -4,9 +4,14 @@
     nixosOptions = {
       physical = import ./physical/default.options.nix;
     };
-    nixosModules = {
-      physical = import ./physical;
-      deployment = import ./deployment;
+    nixosModules = let
+      default = {
+        physical = import ./physical;
+        deployment = import ./deployment;
+      };
+    in {
+      inherit default;
+      default = attrValues default;
     };
   };
 }
