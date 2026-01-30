@@ -1,4 +1,3 @@
-inputFlake:
 { pkgs, lib, config, ... }: let
   inherit (builtins) toString;
   inherit (pkgs) writeShellScript;
@@ -49,6 +48,9 @@ inputFlake:
   );
 in {
   options.physical.deployment = {
+    flake = mkOption {
+      type = types.path;
+    };
     configurationName = mkOption {
       type = types.str;
     };
@@ -116,7 +118,7 @@ in {
               exec ${getExe pkgs.openssh} -p ${toString cfg'.port} ${cfg'.user}@${cfg'.address}
               ;;
           esac
-          NIX_SSHOPTS="''${additionalSshOpts:+$additionalSshOpts }-p $port''${identityFile:+ -i $identityFile}" ${getExe pkgs.nixos-rebuild} --flake ${inputFlake}#${cfg.configurationName} --target-host $user@$host --use-remote-sudo $action
+          NIX_SSHOPTS="''${additionalSshOpts:+$additionalSshOpts }-p $port''${identityFile:+ -i $identityFile}" ${getExe pkgs.nixos-rebuild} --flake ${cfg.flake}#${cfg.configurationName} --target-host $user@$host --build-host $user@$host --use-remote-sudo $action
         '').outPath;
       };
       options = mkOption {
