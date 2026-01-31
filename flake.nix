@@ -1,17 +1,18 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  outputs = inputs@{ self, ... }: {
+  outputs = inputs@{ self, ... }: let
+    inherit (inputs.nixpkgs.lib) attrValues;
+  in {
     nixosOptions = {
       physical = import ./physical/default.options.nix;
     };
     nixosModules = let
-      default = {
+      all = {
         physical = import ./physical;
         deployment = import ./deployment;
       };
     in {
-      inherit default;
-      default = attrValues default;
-    };
+      default.imports = attrValues all;
+    } // all;
   };
 }
